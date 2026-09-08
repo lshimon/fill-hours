@@ -54,11 +54,20 @@
   function parseRows(text) { return P.parseRows(text, { officeWord: settings.officeWord, homeWord: settings.homeWord, defaultOffice: settings.defaultOffice }); }
 
   // ---------- part 2: check against the calendar on screen ----------
+  // The shown month comes from the calendar itself: the cell labelled "1" carries Hilan's day index
+  // (days since 2000-01-01). Month changes are in-place updates, so hidden fields can lag behind.
   function shownMonth() {
+    const cell1 = document.querySelector('td[days][aria-label="1"]');
+    const days = cell1 ? Number(cell1.getAttribute('days')) : NaN;
+    if (Number.isFinite(days)) {
+      const d = new Date(Date.UTC(2000, 0, 1) + days * 86400000);
+      return { m: d.getUTCMonth() + 1, y: d.getUTCFullYear() };
+    }
     const v = document.querySelector('[name="ctl00$mp$currentMonth"]')?.value || '';
     const m = v.match(/^\d{2}\/(\d{2})\/(\d{4})$/);
     return m ? { m: Number(m[1]), y: Number(m[2]) } : null;
   }
+  const monthKey = () => { const m = shownMonth(); return m ? pad2(m.m) + '/' + m.y : ''; };
   function dayCell(days) { return document.querySelector(`td[days="${days}"]`); }
   function cellReported(td) {
     const msg = td.querySelector('.cDM');
@@ -252,6 +261,7 @@
   function saveJob(rows) { writeJSON(sessionStorage, STORE_JOB, { rows, at: Date.now() }); }
   function loadJob() { const j = readJSON(sessionStorage, STORE_JOB); return j && Date.now() - j.at < 120000 ? j : null; }
   function clearJob() { sessionStorage.removeItem(STORE_JOB); }
+  const jobRunning = () => (ui.stop && !ui.stop.hidden) || !!loadJob();
 
   // ---------- UI ----------
   const ui = {};
@@ -464,4 +474,13 @@
 
   buildUI();
   resumeJob();
+
+  // Re-check when the calendar changes under an open panel (month navigation is an in-place update),
+  // so the preview never describes a month that is no longer on screen.
+  let lastMonth = monthKey(); let recheckTimer = null;
+  new MutationObserver(() => {
+    if (ui.panel.hidden || !ui.text.value || jobRunning()) return;
+    clearTimeout(recheckTimer);
+    recheckTimer = setTimeout(() => { const k = monthKey(); if (k && k !== lastMonth) { lastMonth = k; doCheck(); } }, 300);
+  }).observe(document.body, { childList: true, subtree: true });
 })();
