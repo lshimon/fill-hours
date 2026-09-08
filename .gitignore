@@ -16,3 +16,4 @@ test/august-2026.tsv
 test/*.local.*
 # real attendance PDFs for local parser checks
 test/fixtures/
+store/upload/
