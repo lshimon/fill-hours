@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+.DS_Store
+*.log
+.claude/settings.local.json
+# real hours copied from the sheet: local only
+test/august-2026.tsv
+test/*.local.*
