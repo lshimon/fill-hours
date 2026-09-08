@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Fill Hours",
-  "version": "0.2.0",
-  "description": "מילוי שעות בחילנט מכל טבלה: מדביקים, בודקים, לוחצים שמירה בעצמכם. עובד היום עם חילנט.",
+  "version": "0.3.0",
+  "description": "מילוי שעות בחילנט מכל טבלה או מקובץ PDF של דוח נוכחות: מדביקים, בודקים, לוחצים שמירה בעצמכם.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.net.hilan.co.il/Hilannetv2/Attendance/calendarpage.aspx*"],
-      "js": ["parse.js", "content.js"],
+      "js": ["vendor/pdf.worker.min.js", "vendor/pdf.min.js", "parse.js", "pdfsource.js", "content.js"],
       "css": ["panel.css"],
       "run_at": "document_idle",
       "world": "MAIN"

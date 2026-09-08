@@ -4,7 +4,9 @@
 
 **עובד היום עם חילנט.** מערכות נוספות יתווספו לפי ביקוש.
 
-זהו תוסף כרום שממלא את דף השעות שלכם (בחילנט: עמוד 'דיווח ועדכון') ישירות מטבלה שאתם מנהלים בצד. אפשר להעתיק ולהדביק מגיליון גוגל, מאקסל או מקובץ CSV. בקרוב תתווסף גם אפשרות לקרוא את השעות מקובץ PDF של דוח נוכחות.
+זהו תוסף כרום שממלא את דף השעות שלכם (בחילנט: עמוד 'דיווח ועדכון') ישירות מטבלה שאתם מנהלים בצד. אפשר להעתיק ולהדביק מגיליון גוגל, מאקסל או מקובץ CSV, או לבחור קובץ PDF של דוח נוכחות.
+
+**קבצי PDF שהתוסף מזהה:** דוח נוכחות חודשי של מל"מ שכר, ודו"ח נוכחות מפורט של ok2go. כל קובץ אחר עם תאריך ושתי שעות בשורה נקרא בזהירות ומסומן "פורמט לא מוכר", ואז בודקים כל שורה לפני המילוי. הקובץ נקרא בתוך הדפדפן ולא נשלח לשום מקום. יום עם כמה קטעי עבודה מסומן "מפוצל" ונשאר למילוי ידני, כדי לא לדווח יותר ממה שעבדתם.
 
 **פרטיות:** הכל רץ מקומית בתוך הדפדפן שלכם. התוסף שומר רק את הטבלה האחרונה שהדבקתם ואת ההגדרות שלכם, וגם זה רק על המחשב שלכם. הוא לא שולח מידע לשום מקום, לא נוגע בפרטי ההתחברות שלכם, ולעולם לא לוחץ על כפתור השמירה בחילן. את השמירה הסופית אתם מבצעים בעצמכם, אחרי שווידאתם שהכל תקין.
 
@@ -55,6 +57,22 @@ Rows with neither word get the "ללא סימון" default from the panel (נו�
 Header rows and rows without a date are skipped. Weekends, holidays and days already reported are skipped.
 
 Example of a sheet that copies cleanly: תאריך, יום, כניסה, יציאה, סך שעות, הערות, משרד/בית.
+
+### PDF input
+
+Pick an attendance-report PDF in the panel. The file is read inside the browser with a bundled copy of
+pdf.js (`vendor/`, Apache 2.0, Mozilla) and turned into the same rows as a paste, so the check, preview
+and fill are unchanged. Formats are detected by structure, not by company name, so one parser covers
+every customer of that vendor:
+
+| Report | Detected by | Type column | Notes |
+|---|---|---|---|
+| מל"מ שכר "דוח נוכחות חודשי" | vendor footer or title | "עבודה מרחוק" = home, "." = office | free text kept as note, "אין דיווח נוכחות" days skipped, month total checked |
+| ok2go "דו"ח נוכחות מפורט" | title or "מצטבר" column | none (panel default applies) | repeated dates (several segments) flagged "מפוצל" and left for manual fill; total checked by segments |
+| anything else | a date plus two HH:MM per line | none | marked "פורמט לא מוכר", review every row |
+
+To add a vendor: drop a sample under `test/fixtures/` (gitignored), run `node test/pdf.test.js`, and
+add a branch in `pdfsource.js` keyed on a structural fingerprint.
 
 ## Settings (in the panel, saved in the browser)
 

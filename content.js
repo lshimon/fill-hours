@@ -69,6 +69,7 @@
       const v = Object.assign({}, r, { status: 'ok', why: '' });
       if (!r.entry || !r.exit) { v.status = 'bad'; v.why = 'חסרה שעת כניסה או יציאה'; return v; }
       if (r.entry >= r.exit) { v.status = 'bad'; v.why = 'יציאה לפני כניסה'; return v; }
+      if (/מפוצל/.test(r.note || '')) { v.status = 'bad'; v.why = 'יום מפוצל, מלא ידנית: ' + r.note.replace(/^מפוצל:?\s*/, ''); return v; }
       if (!month || r.date.m !== month.m || r.date.y !== month.y) { v.status = 'bad'; v.why = 'לא החודש המוצג'; return v; }
       const td = dayCell(r.days);
       if (!td) { v.status = 'bad'; v.why = 'היום לא נמצא בלוח'; return v; }
@@ -291,6 +292,34 @@
     ui.preview.append(tbl);
   }
 
+  // ---------- PDF input: the file only fills the paste box, the rest of the flow is unchanged ----------
+  const FORMAT_NAMES = { malam: 'מל"מ', ok2go: 'ok2go', generic: 'פורמט לא מוכר' };
+  async function loadPdf(file) {
+    const S = window.HilanFillPdf; const lib = window.pdfjsLib;
+    if (!S || !lib) { status('קריאת PDF לא זמינה (הספרייה לא נטענה). רענן את הדף.', 'err'); return; }
+    status(`קורא ${file.name}...`);
+    try {
+      const data = new Uint8Array(await file.arrayBuffer());
+      const doc = await lib.getDocument({ data, isEvalSupported: false }).promise;
+      let items = [];
+      for (let p = 1; p <= doc.numPages; p++) items = items.concat((await (await doc.getPage(p)).getTextContent()).items);
+      const res = S.parse(S.linesFromItems(items));
+      if (!res.rows.length) { status('לא נמצאו ימים עם שעות ב-PDF. אם זה דוח נוכחות, פתח Issue וצרף אותו.', 'err'); return; }
+      ui.text.value = res.text;
+      ui.fill.disabled = true;
+      doCheck();
+      const sum = S.fmt(S.sumMinutes(res.rows));
+      const parts = [`זוהה: ${FORMAT_NAMES[res.format]}`, `${res.rows.length} ימים`];
+      if (res.total) parts.push(res.total === sum ? `סה"כ ב-PDF ${res.total}, תואם` : `סה"כ ב-PDF ${res.total} לעומת ${sum} בטבלה, בדוק`);
+      if (res.skipped.length) parts.push(`דולגו: ${res.skipped.map((s) => s.date.slice(0, 5) + ' (' + s.why + ')').join(', ')}`);
+      if (res.format === 'generic') parts.push('בדוק כל שורה לפני מילוי');
+      const bad = res.total && res.total !== sum;
+      status(parts.join(' | ') + '. ' + (ui.status.textContent || ''), bad || res.format === 'generic' ? 'err' : '');
+    } catch (e) {
+      status('קריאת ה-PDF נכשלה: ' + (e && e.message ? e.message : e), 'err');
+    }
+  }
+
   function doCheck() {
     const text = ui.text.value;
     localStorage.setItem(STORE_TEXT, text);
@@ -376,8 +405,9 @@
 
   function buildUI() {
     if (document.getElementById('hf-launch')) return;
-    ui.text = h('textarea', { placeholder: 'הדבק כאן את השורות מהגיליון: תאריך, כניסה, יציאה, משרד/בית', oninput: () => { ui.fill.disabled = true; } });
+    ui.text = h('textarea', { placeholder: 'הדבק כאן את השורות מהגיליון: תאריך, כניסה, יציאה, משרד/בית. או בחר קובץ PDF למטה.', oninput: () => { ui.fill.disabled = true; } });
     ui.text.value = localStorage.getItem(STORE_TEXT) || '';
+    ui.pdf = h('input', { type: 'file', accept: '.pdf,application/pdf', onchange: () => { const f = ui.pdf.files && ui.pdf.files[0]; if (f) loadPdf(f); ui.pdf.value = ''; } });
     ui.project = h('input', { type: 'text', value: settings.project, size: '16', onchange: saveSettings });
     ui.orderText = h('input', { type: 'text', value: settings.orderText || '', size: '12', placeholder: 'ריק = היחידה', onchange: saveSettings });
     ui.officeWord = h('input', { type: 'text', value: settings.officeWord, size: '6', onchange: saveSettings });
@@ -402,6 +432,7 @@
       h('div', { class: 'hf-body' },
         h('div', { class: 'hf-hint', text: 'שלב 1: בגיליון, סמן את שורות החודש (עם עמודת התאריך) והעתק. שלב 2: הדבק כאן, לחץ "בדוק" ואז "מלא". שלב 3: בדוק את הטבלה בחילן ולחץ "שמירה" בעצמך.' }),
         ui.text,
+        h('div', { class: 'hf-row' }, h('label', { text: 'או קובץ PDF של דוח נוכחות:' }), ui.pdf),
         h('div', { class: 'hf-row' }, h('label', { text: 'פרויקט מכיל:' }), ui.project, h('label', { text: 'הזמנה מכיל:' }), ui.orderText),
         h('div', { class: 'hf-row' }, h('label', { text: 'מילת משרד:' }), ui.officeWord, h('label', { text: 'מילת בית:' }), ui.homeWord, h('label', { text: 'ללא סימון:' }), ui.defaultType),
         h('div', { class: 'hf-row' }, h('label', {}, ui.notes, ' להעתיק הערות'), h('label', {}, ui.updateReported, ' לעדכן גם ימים שכבר דווחו')),
