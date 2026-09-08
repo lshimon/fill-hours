@@ -24,7 +24,7 @@
   }
   const STORE_TEXT = 'hilanFill.text';
   const STORE_PDFINFO = 'hilanFill.pdfInfo';
-  const STORE_OPEN = 'hilanFill.open';      // sessionStorage: panel stays open across month changes
+  const STORE_OPEN = 'hilanFill.open';      // sessionStorage: time the panel was opened, survives a quick postback reload only
   const STORE_JOB = 'hilanFill.job';
   const STORE_SETTINGS = 'hilanFill.settings';
 
@@ -463,12 +463,16 @@
     const launch = h('button', { id: 'hf-launch', text: 'מילוי שעות', onclick: () => setOpen(ui.panel.hidden) });
     document.body.append(launch, ui.panel);
     // the panel stays as the user left it: Hilan reloads the page on every month change
-    if (sessionStorage.getItem(STORE_OPEN) === '1') setOpen(true);
+    // reopen only after a quick reload (a postback within a minute); a fresh visit starts closed
+    const openAt = Number(sessionStorage.getItem(STORE_OPEN) || 0);
+    if (openAt && Date.now() - openAt < 60000) setOpen(true);
+    // stamp the moment the page leaves, so a postback reload reopens but a later visit does not
+    window.addEventListener('pagehide', () => { try { if (!ui.panel.hidden) sessionStorage.setItem(STORE_OPEN, String(Date.now())); } catch (e) { /* ignore */ } });
   }
 
   function setOpen(open) {
     ui.panel.hidden = !open;
-    try { sessionStorage.setItem(STORE_OPEN, open ? '1' : '0'); } catch (e) { /* ignore */ }
+    try { if (open) sessionStorage.setItem(STORE_OPEN, String(Date.now())); else sessionStorage.removeItem(STORE_OPEN); } catch (e) { /* ignore */ }
     if (open && ui.text.value) doCheck();
   }
 
