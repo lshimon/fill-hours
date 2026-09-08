@@ -115,7 +115,8 @@
 
   function toText(rows) {
     const q = (s) => (/[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s);
-    return rows.map((r) => [r.date, r.entry, r.exit, r.type, q(r.note || '')].join(',')).join('\n');
+    // trailing empty columns are dropped for readability; parse.js reads both shapes
+    return rows.map((r) => [r.date, r.entry, r.exit, r.type, q(r.note || '')].join(',').replace(/,+$/, '')).join('\n');
   }
 
   // worked minutes: a split day counts its segments, not the span, so the sum can be checked

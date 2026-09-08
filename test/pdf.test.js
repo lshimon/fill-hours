@@ -52,6 +52,7 @@ eq(o.rows[1].note.startsWith(S.SPLIT_WORD), true, 'split day flagged in the note
 eq(o.total, '15:18', 'ok2go month total read');
 eq(S.fmt(S.sumMinutes(o.rows)), '15:18', 'split day counted by segments, sum equals the report total');
 eq(o.text.split('\n')[1], '19/08/2026,08:19,18:30,,מפוצל: 08:19-10:02 13:58-18:30', 'ROWS text line for the split day');
+eq(o.text.split('\n')[0], '03/08/2026,08:12,17:15', 'trailing empty columns dropped');
 
 // generic: any date with two times
 const g = S.parse([line(100, [['01/09/2026', 500], ['09:00', 400], ['18:00', 300]])]);

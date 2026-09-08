@@ -293,7 +293,9 @@
   }
 
   // ---------- PDF input: the file only fills the paste box, the rest of the flow is unchanged ----------
-  const FORMAT_NAMES = { malam: 'מל"מ', ok2go: 'ok2go', generic: 'פורמט לא מוכר' };
+  // Latin tokens inside Hebrew text are wrapped in bidi isolates so they do not flip the line
+  const ltr = (s) => '⁦' + s + '⁩';
+  const FORMAT_NAMES = { malam: 'מל"מ', ok2go: ltr('ok2go'), generic: 'פורמט לא מוכר' };
   async function loadPdf(file) {
     const S = window.HilanFillPdf; const lib = window.pdfjsLib;
     if (!S || !lib) { status('קריאת PDF לא זמינה (הספרייה לא נטענה). רענן את הדף.', 'err'); return; }
@@ -310,8 +312,12 @@
       doCheck();
       const sum = S.fmt(S.sumMinutes(res.rows));
       const parts = [`זוהה: ${FORMAT_NAMES[res.format]}`, `${res.rows.length} ימים`];
-      if (res.total) parts.push(res.total === sum ? `סה"כ ב-PDF ${res.total}, תואם` : `סה"כ ב-PDF ${res.total} לעומת ${sum} בטבלה, בדוק`);
-      if (res.skipped.length) parts.push(`דולגו: ${res.skipped.map((s) => s.date.slice(0, 5) + ' (' + s.why + ')').join(', ')}`);
+      if (res.total) parts.push(res.total === sum ? `סה"כ ב-${ltr('PDF')} ${ltr(res.total)}, תואם` : `סה"כ ב-${ltr('PDF')} ${ltr(res.total)} לעומת ${ltr(sum)} בטבלה, בדוק`);
+      if (res.skipped.length) {
+        const byWhy = new Map();
+        for (const s of res.skipped) { if (!byWhy.has(s.why)) byWhy.set(s.why, []); byWhy.get(s.why).push(s.date.slice(0, 5)); }
+        parts.push('דולגו: ' + [...byWhy].map(([why, dates]) => `${why}: ${dates.join(', ')}`).join('; '));
+      }
       if (res.format === 'generic') parts.push('בדוק כל שורה לפני מילוי');
       const bad = res.total && res.total !== sum;
       status(parts.join(' | ') + '. ' + (ui.status.textContent || ''), bad || res.format === 'generic' ? 'err' : '');
