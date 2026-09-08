@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="he">
+<head>
+<meta charset="utf-8">
+<title>Fill Hours store shot</title>
+<link rel="stylesheet" href="../../panel.css">
+<style>
+  html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; background: #eef3f6; font-family: Arial, sans-serif; }
+  .bg { position: absolute; inset: 0; direction: rtl; padding: 28px 36px; color: #555; }
+  .bg h1 { font-size: 22px; font-weight: 400; margin: 0 0 18px; color: #333; }
+  .cal { position: absolute; right: 36px; top: 70px; width: 560px; border-collapse: collapse; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .cal th { background: #5ab0cc; color: #fff; font-weight: 600; padding: 8px 4px; font-size: 13px; }
+  .cal td { border: 1px solid #e3e8eb; height: 54px; vertical-align: top; padding: 6px 8px; font-size: 16px; color: #999; width: 14%; }
+  .cal td.we { background: #f3f3f3; }
+  .cal td .x { float: left; color: #e8613f; font-size: 13px; }
+  .cal td .h { display: block; font-size: 11px; color: #444; margin-top: 8px; }
+  .caption { position: absolute; right: 36px; bottom: 26px; width: 560px; direction: rtl; font-size: 26px; color: #1f3a44; line-height: 1.35; }
+  .caption b { color: #2ea0c8; }
+  #hf-panel { zoom: 1.2; left: 24px; bottom: 16px; width: 470px; max-height: 96vh; }
+  #hf-panel textarea { height: 76px; }
+  #hf-launch { display: none; }
+</style>
+</head>
+<body>
+<div class="bg">
+  <h1>דיווח ועדכון | ישראל ישראלי 12345</h1>
+  <table class="cal">
+    <tr><th>ראשון</th><th>שני</th><th>שלישי</th><th>רביעי</th><th>חמישי</th><th>שישי</th><th>שבת</th></tr>
+    <tr><td></td><td></td><td>1<span class="x">✕</span></td><td>2<span class="x">✕</span></td><td>3<span class="x">✕</span></td><td>4</td><td class="we">5</td></tr>
+    <tr><td>6<span class="x">✕</span></td><td>7<span class="x">✕</span></td><td>8<span class="x">✕</span></td><td>9<span class="x">✕</span></td><td>10<span class="x">✕</span></td><td>11</td><td class="we">12</td></tr>
+    <tr><td>13<span class="x">✕</span></td><td>14<span class="x">✕</span></td><td>15<span class="x">✕</span></td><td>16<span class="x">✕</span></td><td>17<span class="x">✕</span></td><td>18</td><td class="we">19</td></tr>
+    <tr><td>20<span class="x">✕</span></td><td>21<span class="x">✕</span></td><td>22<span class="x">✕</span></td><td>23<span class="x">✕</span></td><td>24<span class="x">✕</span></td><td>25</td><td class="we">26</td></tr>
+    <tr><td>27<span class="x">✕</span></td><td>28<span class="x">✕</span></td><td>29<span class="x">✕</span></td><td>30<span class="x">✕</span></td><td></td><td></td><td></td></tr>
+  </table>
+  <div class="caption" id="caption"></div>
+</div>
+
+<div id="hf-panel">
+  <div class="hf-head"><h3>מילוי שעות מטבלה</h3><button class="hf-min">−</button></div>
+  <div class="hf-body">
+    <div class="hf-hint">שלב 1: בגיליון, סמן את שורות החודש (עם עמודת התאריך) והעתק. שלב 2: הדבק כאן, לחץ "בדוק" ואז "מלא". שלב 3: בדוק את הטבלה בחילן ולחץ "שמירה" בעצמך.</div>
+    <textarea id="ta"></textarea>
+    <div class="hf-row"><label>או קובץ PDF של דוח נוכחות:</label><input type="file"></div>
+    <div class="hf-row"><label>פרויקט מכיל:</label><input type="text" size="16" value="הפרויקט שלי"><label>הזמנה מכיל:</label><input type="text" size="12" placeholder="ריק = היחידה"></div>
+    <div class="hf-row"><label>מילת משרד:</label><input type="text" size="6" value="משרד"><label>מילת בית:</label><input type="text" size="6" value="בית"><label>ללא סימון:</label><select><option>עבודה מהבית</option></select></div>
+    <div class="hf-row"><label><input type="checkbox"> להעתיק הערות</label><label><input type="checkbox"> לעדכן גם ימים שכבר דווחו</label></div>
+    <div class="hf-row"><button class="hf-secondary">בדוק</button><button>מלא</button><button class="hf-secondary">נקה</button></div>
+    <div id="preview"></div>
+    <div class="hf-status" id="status"></div>
+  </div>
+</div>
+
+<script>
+  const scene = new URLSearchParams(location.search).get('scene') || '1';
+  const rows = [
+    ['01/09','נוכחות','09:00','18:00','9:00'], ['02/09','מהבית','09:15','17:45','8:30'], ['03/09','נוכחות','08:45','17:30','8:45'],
+    ['06/09','מהבית','09:00','18:10','9:10'], ['07/09','נוכחות','09:30','18:00','8:30'], ['08/09','מהבית','08:50','17:20','8:30'],
+  ];
+  const ta = document.getElementById('ta');
+  const pv = document.getElementById('preview');
+  const st = document.getElementById('status');
+  const cap = document.getElementById('caption');
+  const table = (state) => '<table><thead><tr><th>תאריך</th><th>סוג</th><th>כניסה</th><th>יציאה</th><th>שעות</th><th>מצב</th></tr></thead><tbody>'
+    + rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${state}</td></tr>`).join('')
+    + '<tr class="hf-total"><td colspan="4">סה"כ שעות למילוי</td><td>52:25</td><td class="hf-hint">52.42 בעשרוני</td></tr></tbody></table>';
+  if (scene === '1') {
+    ta.value = '01/09/2026\tשלישי\t09:00\t18:00\t9:00:00\t\tמשרד\n02/09/2026\tרביעי\t09:15\t17:45\t8:30:00\n03/09/2026\tחמישי\t08:45\t17:30\t8:45:00\t\tמשרד\n06/09/2026\tראשון\t09:00\t18:10\t9:10:00\n07/09/2026\tשני\t09:30\t18:00\t8:30:00\t\tמשרד';
+    pv.innerHTML = table('ימולא');
+    st.textContent = 'חודש מוצג 09/2026 | למילוי: 6 | ידולגו: 0 | שגויים: 0';
+    cap.innerHTML = 'מדביקים את החודש מהגיליון.<br><b>רואים בדיוק מה ייכתב</b> לפני שנוגעים בטבלה.';
+  } else if (scene === '2') {
+    ta.value = '02/08/2026,07:29,15:25,משרד\n03/08/2026,07:24,15:22,משרד\n04/08/2026,08:20,17:20,בית,"מעבר לתשתית חדשה"\n05/08/2026,08:04,17:04,בית\n06/08/2026,08:44,17:44,בית';
+    pv.innerHTML = table('ימולא');
+    st.textContent = 'זוהה: מלם שכר | 18 ימים | סה"כ ב-PDF 154:43, תואם | דולגו: אין דיווח נוכחות: 10/08, 11/08\nחודש מוצג 08/2026 | למילוי: 18 | ידולגו: 0 | שגויים: 0';
+    cap.innerHTML = 'או בוחרים קובץ PDF של דוח נוכחות.<br><b>נקרא בתוך הדפדפן</b>, סה"כ החודש מאומת מול הדוח.';
+  } else {
+    ta.value = '01/09/2026\tשלישי\t09:00\t18:00\t9:00:00\t\tמשרד\n02/09/2026\tרביעי\t09:15\t17:45\t8:30:00';
+    pv.innerHTML = table('ימולא');
+    st.className = 'hf-status ok';
+    st.textContent = 'אומת: 6 ימים שלמים. בדוק את הטבלה ולחץ "שמירה".';
+    cap.innerHTML = '"מלא" ממלא ומאמת כל שורה.<br><b>"שמירה" בחילן לוחצים אתם.</b> תמיד.';
+  }
+</script>
+</body>
+</html>

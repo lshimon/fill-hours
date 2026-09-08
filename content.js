@@ -307,7 +307,7 @@
   // ---------- PDF input: the file only fills the paste box, the rest of the flow is unchanged ----------
   // Latin tokens inside Hebrew text are wrapped in bidi isolates so they do not flip the line
   const ltr = (s) => '⁦' + s + '⁩';
-  const FORMAT_NAMES = { malam: 'מל"מ', ok2go: ltr('ok2go'), generic: 'פורמט לא מוכר' };
+  const FORMAT_NAMES = { malam: 'מלם שכר', ok2go: ltr('ok2go'), generic: 'פורמט לא מוכר' };
   async function loadPdf(file) {
     const S = window.HilanFillPdf; const lib = window.pdfjsLib;
     if (!S || !lib) { status('קריאת PDF לא זמינה (הספרייה לא נטענה). רענן את הדף.', 'err'); return; }

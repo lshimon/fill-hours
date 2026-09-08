@@ -17,9 +17,11 @@ from data you provide (a pasted table or an attendance-report PDF you select).
 ## What is stored, and where
 
 - The last pasted table, the PDF summary line, and your panel settings (project name, office and
-  home words, default type, checkboxes) are stored in your browser's local storage for the Hilanet
-  site, on your computer only. Chrome may sync nothing of this; the extension does not use the
-  Chrome storage API.
+  home words, default type, checkboxes) are stored in your browser's local storage under the
+  Hilanet site's origin, on your computer only. Because the extension runs inside the Hilanet page,
+  that storage is the site's: scripts on that page could read it, and it stays after the extension
+  is uninstalled until you press "נקה" or clear the site's data. The extension does not use the
+  Chrome storage API and nothing is synced by it.
 - A short "fill in progress" marker is kept in session storage for up to two minutes so a fill can
   continue after Hilanet reloads the page.
 - Nothing is stored on any server.

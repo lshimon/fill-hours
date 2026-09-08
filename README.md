@@ -6,7 +6,7 @@
 
 זהו תוסף כרום שממלא את דף השעות שלכם (בחילנט: עמוד 'דיווח ועדכון') ישירות מטבלה שאתם מנהלים בצד. אפשר להעתיק ולהדביק מגיליון גוגל, מאקסל או מקובץ CSV, או לבחור קובץ PDF של דוח נוכחות.
 
-**קבצי PDF שהתוסף מזהה:** דוח נוכחות חודשי של מל"מ שכר, ודו"ח נוכחות מפורט של ok2go. כל קובץ אחר עם תאריך ושתי שעות בשורה נקרא בזהירות ומסומן "פורמט לא מוכר", ואז בודקים כל שורה לפני המילוי. הקובץ נקרא בתוך הדפדפן ולא נשלח לשום מקום. יום עם כמה קטעי עבודה מסומן "מפוצל" ונשאר למילוי ידני, כדי לא לדווח יותר ממה שעבדתם.
+**קבצי PDF שהתוסף מזהה:** דוח נוכחות חודשי של מלם שכר, ודו"ח נוכחות מפורט של ok2go. כל קובץ אחר עם תאריך ושתי שעות בשורה נקרא בזהירות ומסומן "פורמט לא מוכר", ואז בודקים כל שורה לפני המילוי. הקובץ נקרא בתוך הדפדפן ולא נשלח לשום מקום. יום עם כמה קטעי עבודה מסומן "מפוצל" ונשאר למילוי ידני, כדי לא לדווח יותר ממה שעבדתם.
 
 **פרטיות:** הכל רץ מקומית בתוך הדפדפן שלכם. התוסף שומר רק את הטבלה האחרונה שהדבקתם ואת ההגדרות שלכם, וגם זה רק על המחשב שלכם. הוא לא שולח מידע לשום מקום, לא נוגע בפרטי ההתחברות שלכם, ולעולם לא לוחץ על כפתור השמירה בחילן. את השמירה הסופית אתם מבצעים בעצמכם, אחרי שווידאתם שהכל תקין.
 
@@ -52,7 +52,7 @@ The day-row format shared with other tools (sources and targets) is in [ROWS.md]
 
 Any table with, per row: a date (`dd/mm/yyyy`), an entry time (`HH:MM`), an exit time (`HH:MM`),
 and optionally a cell containing the office word (default `משרד`) or the home word (default `בית`).
-Rows with neither word get the "ללא סימון" default from the panel (נוכחות unless changed) and are marked
+Rows with neither word get the "ללא סימון" default from the panel (עבודה מהבית unless changed) and are marked
 "(ברירת מחדל)" in the preview. Durations like `9:05:00` are ignored.
 Header rows and rows without a date are skipped. Weekends, holidays and days already reported are skipped.
 
@@ -67,7 +67,7 @@ every customer of that vendor:
 
 | Report | Detected by | Type column | Notes |
 |---|---|---|---|
-| מל"מ שכר "דוח נוכחות חודשי" | vendor footer or title | "עבודה מרחוק" = home, "." = office | free text kept as note, "אין דיווח נוכחות" days skipped, month total checked |
+| מלם שכר "דוח נוכחות חודשי" | vendor footer or title | "עבודה מרחוק" = home, "." = office | free text kept as note, "אין דיווח נוכחות" days skipped, month total checked |
 | ok2go "דו"ח נוכחות מפורט" | title or "מצטבר" column | none (panel default applies) | repeated dates (several segments) flagged "מפוצל" and left for manual fill; total checked by segments |
 | anything else | a date plus two HH:MM per line | none | marked "פורמט לא מוכר", review every row |
 
