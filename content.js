@@ -23,6 +23,8 @@
     return opt ? opt.value : SYMBOL_FALLBACK[office ? 'office' : 'home'];
   }
   const STORE_TEXT = 'hilanFill.text';
+  const STORE_PDFINFO = 'hilanFill.pdfInfo';
+  const STORE_OPEN = 'hilanFill.open';      // sessionStorage: panel stays open across month changes
   const STORE_JOB = 'hilanFill.job';
   const STORE_SETTINGS = 'hilanFill.settings';
 
@@ -309,7 +311,6 @@
       if (!res.rows.length) { status('לא נמצאו ימים עם שעות ב-PDF. אם זה דוח נוכחות, פתח Issue וצרף אותו.', 'err'); return; }
       ui.text.value = res.text;
       ui.fill.disabled = true;
-      doCheck();
       const sum = S.fmt(S.sumMinutes(res.rows));
       const parts = [`זוהה: ${FORMAT_NAMES[res.format]}`, `${res.rows.length} ימים`];
       if (res.total) parts.push(res.total === sum ? `סה"כ ב-${ltr('PDF')} ${ltr(res.total)}, תואם` : `סה"כ ב-${ltr('PDF')} ${ltr(res.total)} לעומת ${ltr(sum)} בטבלה, בדוק`);
@@ -319,8 +320,10 @@
         parts.push('דולגו: ' + [...byWhy].map(([why, dates]) => `${why}: ${dates.join(', ')}`).join('; '));
       }
       if (res.format === 'generic') parts.push('בדוק כל שורה לפני מילוי');
-      const bad = res.total && res.total !== sum;
-      status(parts.join(' | ') + '. ' + (ui.status.textContent || ''), bad || res.format === 'generic' ? 'err' : '');
+      const bad = !!(res.total && res.total !== sum) || res.format === 'generic';
+      // the PDF summary lives next to the pasted text and is shown by every check until the text changes
+      writeJSON(localStorage, STORE_PDFINFO, { text: parts.join(' | '), bad });
+      doCheck();
     } catch (e) {
       status('קריאת ה-PDF נכשלה: ' + (e && e.message ? e.message : e), 'err');
     }
@@ -336,7 +339,9 @@
     const ok = checked.filter((r) => r.status === 'ok');
     const bad = checked.filter((r) => r.status === 'bad');
     const month = shownMonth();
-    status(`חודש מוצג ${month ? pad2(month.m) + '/' + month.y : '?'} | למילוי: ${ok.length} | ידולגו: ${checked.length - ok.length - bad.length} | שגויים: ${bad.length}`, bad.length ? 'err' : '');
+    const pdfInfo = readJSON(localStorage, STORE_PDFINFO);
+    const line = `חודש מוצג ${month ? pad2(month.m) + '/' + month.y : '?'} | למילוי: ${ok.length} | ידולגו: ${checked.length - ok.length - bad.length} | שגויים: ${bad.length}`;
+    status(pdfInfo ? pdfInfo.text + '.\n' + line : line, bad.length || (pdfInfo && pdfInfo.bad) ? 'err' : '');
     const problems = checked.length - ok.length;
     ui.filter.hidden = !problems;
     ui.filter.textContent = onlyProblems ? 'הצג הכל' : `הצג רק בעיות (${problems})`;
@@ -411,7 +416,7 @@
 
   function buildUI() {
     if (document.getElementById('hf-launch')) return;
-    ui.text = h('textarea', { placeholder: 'הדבק כאן את השורות מהגיליון: תאריך, כניסה, יציאה, משרד/בית. או בחר קובץ PDF למטה.', oninput: () => { ui.fill.disabled = true; } });
+    ui.text = h('textarea', { placeholder: 'הדבק כאן את השורות מהגיליון: תאריך, כניסה, יציאה, משרד/בית. או בחר קובץ PDF למטה.', oninput: () => { ui.fill.disabled = true; localStorage.removeItem(STORE_PDFINFO); } });
     ui.text.value = localStorage.getItem(STORE_TEXT) || '';
     ui.pdf = h('input', { type: 'file', accept: '.pdf,application/pdf', onchange: () => { const f = ui.pdf.files && ui.pdf.files[0]; if (f) loadPdf(f); ui.pdf.value = ''; } });
     ui.project = h('input', { type: 'text', value: settings.project, size: '16', onchange: saveSettings });
@@ -427,14 +432,14 @@
     ui.fill = h('button', { text: 'מלא', disabled: 'disabled', onclick: doFill });
     ui.stop = h('button', { class: 'hf-stop', text: 'עצור', hidden: 'hidden', onclick: () => { stopRequested = true; clearJob(); status('עוצר אחרי השורה הנוכחית...'); } });
     ui.filter = h('button', { class: 'hf-secondary', text: 'הצג רק בעיות', hidden: 'hidden', onclick: () => { onlyProblems = !onlyProblems; doCheck(); } });
-    ui.clear = h('button', { class: 'hf-secondary', text: 'נקה', onclick: () => { ui.text.value = ''; localStorage.removeItem(STORE_TEXT); ui.preview.innerHTML = ''; ui.fill.disabled = true; ui.filter.hidden = true; status(''); ui.text.focus(); } });
+    ui.clear = h('button', { class: 'hf-secondary', text: 'נקה', onclick: () => { ui.text.value = ''; localStorage.removeItem(STORE_TEXT); localStorage.removeItem(STORE_PDFINFO); ui.preview.innerHTML = ''; ui.fill.disabled = true; ui.filter.hidden = true; status(''); ui.text.focus(); } });
     ui.preview = h('div');
     ui.status = h('div', { class: 'hf-status' });
 
     ui.panel = h('div', { id: 'hf-panel', hidden: 'hidden' },
       h('div', { class: 'hf-head' },
         h('h3', { text: 'מילוי שעות מטבלה' }),
-        h('button', { class: 'hf-min', title: 'מזער', text: '−', onclick: () => { ui.panel.hidden = true; } })),
+        h('button', { class: 'hf-min', title: 'מזער', text: '−', onclick: () => setOpen(false) })),
       h('div', { class: 'hf-body' },
         h('div', { class: 'hf-hint', text: 'שלב 1: בגיליון, סמן את שורות החודש (עם עמודת התאריך) והעתק. שלב 2: הדבק כאן, לחץ "בדוק" ואז "מלא". שלב 3: בדוק את הטבלה בחילן ולחץ "שמירה" בעצמך.' }),
         ui.text,
@@ -445,15 +450,16 @@
         h('div', { class: 'hf-row' }, ui.check, ui.fill, ui.stop, ui.filter, ui.clear),
         ui.preview, ui.status));
 
-    const launch = h('button', { id: 'hf-launch', text: 'מילוי שעות', onclick: () => { ui.panel.hidden = !ui.panel.hidden; if (!ui.panel.hidden && ui.text.value) doCheck(); } });
+    const launch = h('button', { id: 'hf-launch', text: 'מילוי שעות', onclick: () => setOpen(ui.panel.hidden) });
     document.body.append(launch, ui.panel);
-    // click outside the panel minimizes it. Only real user clicks count: the fill clicks calendar
-    // cells programmatically, and those must not hide the panel mid-run.
-    document.addEventListener('click', (e) => {
-      if (!e.isTrusted || ui.panel.hidden) return;
-      if (ui.panel.contains(e.target) || launch.contains(e.target)) return;
-      ui.panel.hidden = true;
-    }, true);
+    // the panel stays as the user left it: Hilan reloads the page on every month change
+    if (sessionStorage.getItem(STORE_OPEN) === '1') setOpen(true);
+  }
+
+  function setOpen(open) {
+    ui.panel.hidden = !open;
+    try { sessionStorage.setItem(STORE_OPEN, open ? '1' : '0'); } catch (e) { /* ignore */ }
+    if (open && ui.text.value) doCheck();
   }
 
   buildUI();

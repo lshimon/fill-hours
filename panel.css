@@ -62,7 +62,7 @@
 #hf-panel tr.hf-bad td { color: #c62828; }
 #hf-panel tr.hf-skip td { color: #888; }
 #hf-panel tr.hf-total td { font-weight: 700; background: #f5f7f8; border-top: 2px solid #cfd8dc; }
-#hf-panel .hf-status { margin-top: 8px; padding: 8px; border-radius: 6px; background: #f5f7f8; min-height: 18px; }
+#hf-panel .hf-status { margin-top: 8px; padding: 8px; border-radius: 6px; background: #f5f7f8; min-height: 18px; white-space: pre-line; }
 #hf-panel .hf-status.ok { background: #e8f5e9; color: #1b5e20; }
 #hf-panel .hf-status.err { background: #ffebee; color: #b71c1c; }
 #hf-panel .hf-hint { color: #666; font-size: 12px; }
