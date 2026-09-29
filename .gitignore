@@ -17,3 +17,4 @@ test/*.local.*
 # real attendance PDFs for local parser checks
 test/fixtures/
 store/upload/
+.claude/launch.json

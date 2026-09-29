@@ -1,0 +1,188 @@
+{
+  "contractors": [
+    {
+      "he": "מטריקס אי.טי",
+      "en": "Matrix IT",
+      "aliases": ["Matrix", "מטריקס", "מטריקס גלובל", "Matrix Global", "matrix.co.il"],
+      "url": "https://www.matrix.co.il/",
+      "source": "https://www.matrix.co.il/about-us/",
+      "payroll": {"system": "Hilan", "verified": true, "source": "https://co.il.ipaddress.com/matrix.net.hilan.co.il (subdomain matrix.net.hilan.co.il resolves to Hilan's net.hilan.co.il infrastructure)"}
+    },
+    {
+      "he": "פרולוג'יק",
+      "en": "Prologic",
+      "aliases": ["Prologic Ltd", "פרולוגיק", "פרולוג׳יק", "פרולוגי'ק", "prologic.co.il"],
+      "url": "https://www.prologic.co.il/",
+      "source": "https://www.prologic.co.il/profile",
+      "payroll": {"system": null, "verified": false, "source": null}
+    },
+    {
+      "he": "קומבלק איי.טי",
+      "en": "Comblack IT",
+      "aliases": ["ComBlack", "Comblack", "קומבלק", "comblack.co.il"],
+      "url": "https://comblack.co.il/",
+      "source": "https://www.themarker.com/labels/jobsdec/2023-12-26/ty-article-labels/0000018c-a057-d9c4-a9cf-b1f705ba0000",
+      "payroll": {"system": null, "verified": false, "source": null}
+    },
+    {
+      "he": "וואן טכנולוגיות (ONE1)",
+      "en": "ONE Technologies (ONE1)",
+      "aliases": ["ONE1", "One Technologies", "וואן", "one1.global"],
+      "url": "https://one1.global/",
+      "source": "https://one1.global/about/",
+      "payroll": {"system": null, "verified": false, "source": null}
+    },
+    {
+      "he": "סיסנת גרופ",
+      "en": "Sysnet Group",
+      "aliases": ["Sysnet", "סיסנת", "sysnet-group.co.il"],
+      "url": "https://sysnet-group.co.il/",
+      "source": "https://sysnet-group.co.il/",
+      "payroll": {"system": null, "verified": false, "source": null}
+    },
+    {
+      "he": "מלם תים",
+      "en": "Malam Team",
+      "aliases": ["Malam-Team", "Malam Team Ltd", "מלם-תים", "מלם טים", "malamteam.com"],
+      "url": "https://www.malamteam.com/?lang=en",
+      "source": "https://www.bdicode.co.il/en/company/malam-team-ltd-en/",
+      "payroll": {"system": "Malam Payroll / TRM", "verified": true, "source": "https://www.malam-payroll.com/%D7%93%D7%99%D7%95%D7%95%D7%97%D7%99-%D7%A0%D7%95%D7%9B%D7%97%D7%95%D7%AA/ (Malam Team's own payroll/attendance arm, Malam-Payroll, used group-wide)"}
+    },
+    {
+      "he": "מרטנס (קבוצת מלם תים)",
+      "en": "Mertens (Malam Team Group)",
+      "aliases": ["Mertens", "מרטנס"],
+      "url": "https://www.malamteam.com/?lang=en",
+      "source": "https://prospeo.io/c/mertens-email-format",
+      "payroll": {"system": "Malam Payroll", "verified": false, "source": null}
+    },
+    {
+      "he": "נס טכנולוגיות",
+      "en": "Ness Technologies",
+      "aliases": ["Ness", "NESS", "ness-tech.co.il"],
+      "url": "https://www.ness-tech.co.il/en",
+      "source": "https://www.ness-tech.co.il/en/ourstory/time",
+      "payroll": {"system": "Hilan (Ness is owned by Hilan Group since 2014)", "verified": true, "source": "https://www.ness-tech.co.il/en/ourstory/time (Hilan Group acquired Ness Israel operations in 2014)"}
+    },
+    {
+      "he": "טלדור",
+      "en": "Taldor",
+      "aliases": ["Taldor Ltd", "טלדור יועצים", "taldor.co.il"],
+      "url": "https://www.taldor.co.il/",
+      "source": "https://next.obudget.org/i/org/company/511350613",
+      "payroll": {"system": "AttenIX-TS (Ovdimnet/Priority)", "verified": true, "source": "https://hrhome.co.il/hi-tech-personnel-companies/ (AttenIX-TS attendance system client list explicitly names Taldor)"}
+    },
+    {
+      "he": "בינת (Bynet)",
+      "en": "Bynet (Data Communications / Software Systems)",
+      "aliases": ["Bynet Data Communications", "Bynet Software Systems", "בינת תקשורת", "bynet.co.il"],
+      "url": "https://www.bynet.co.il/en/solutions/",
+      "source": "https://www.glassdoor.com/Reviews/Bynet-Software-Systems-Israel-Reviews-EI_IE562449.0,22_IL.23,29_IN119.htm",
+      "payroll": {"system": null, "verified": false, "source": null}
+    },
+    {
+      "he": "אמן גרופ",
+      "en": "Aman Group",
+      "aliases": ["Aman", "אמן", "aman.co.il"],
+      "url": "https://www.aman.co.il/",
+      "source": "https://il.linkedin.com/company/aman-group",
+      "payroll": {"system": null, "verified": false, "source": null}
+    },
+    {
+      "he": "אלעד מערכות תוכנה",
+      "en": "Elad Software Systems",
+      "aliases": ["Elad Systems", "אלעד", "elad-systems"],
+      "url": "https://il.linkedin.com/company/elad-systems",
+      "source": "https://www.dnb.com/business-directory/company-profiles.elad_software_systems_ltd.3229b94624cf2e149af2849707a5697a.html",
+      "payroll": {"system": null, "verified": false, "source": null}
+    },
+    {
+      "he": "לוג-און סופטוור",
+      "en": "Log-On Software",
+      "aliases": ["Log-On", "לוג און", "log-on.com"],
+      "url": "https://log-on.com/",
+      "source": "https://israeltrade.org.au/2022/06/10/log-on-software-ltd-leading-software-company/",
+      "payroll": {"system": null, "verified": false, "source": null}
+    }
+  ],
+  "payrollSystems": [
+    {
+      "he": "חילן / חילנט",
+      "en": "Hilan / Hilanet",
+      "aliases": ["Hilan", "Hilanet", "חילן", "חילנט", "net.hilan.co.il", "hilan.co.il"],
+      "url": "https://www.hilan.co.il/en/",
+      "source": "https://www.hilan.co.il/en/solutions/time-attendance/",
+      "webReporting": true
+    },
+    {
+      "he": "סינריון",
+      "en": "Synerion",
+      "aliases": ["Synerion", "סינריון", "synerion.co.il", "synerioncloud.com"],
+      "url": "https://synerion.co.il/en/time_attendance_system/",
+      "source": "https://www.capterra.co.il/software/129186/synerion",
+      "webReporting": true
+    },
+    {
+      "he": "מלם שכר / TRM",
+      "en": "Malam Payroll / TRM (Time Reporting Module)",
+      "aliases": ["Malam Payroll", "Malam Web Clock", "TRM", "מלם שכר פלוס", "מל\"מ", "malam-payroll.com"],
+      "url": "https://www.malam-payroll.com/",
+      "source": "https://play.google.com/store/apps/details?id=com.malam.trm&hl=en_US",
+      "webReporting": true
+    },
+    {
+      "he": "מיכפל",
+      "en": "Michpal",
+      "aliases": ["Michpal Group", "מיכפל", "מיכפל שכר"],
+      "url": "http://www.formulasystems.com/en/group-structure/0ba60510-9cea-418f-9e88-6e510ae951cf",
+      "source": "http://www.formulasystems.com/en/group-structure/0ba60510-9cea-418f-9e88-6e510ae951cf",
+      "webReporting": null
+    },
+    {
+      "he": "מקאנו",
+      "en": "Meckano",
+      "aliases": ["Meckano", "מקאנו", "meckano.com"],
+      "url": "https://www.meckano.com/",
+      "source": "https://www.meckano.com/Who-we-are",
+      "webReporting": true
+    },
+    {
+      "he": "אטניקס (עובדים.נט)",
+      "en": "AttenIX-TS (formerly Ovdimnet)",
+      "aliases": ["AttenIX", "Attenix", "AttenIX-TS", "Ovdimnet", "עובדים.נט", "עובדיםנט", "workersnet"],
+      "url": "https://www.prnewswire.com/il/news-releases/priority-software-acquires-israel-based-ovdimnet-a-leading-cloud-based-workforce-management-platform-896257531.html",
+      "source": "https://hrhome.co.il/hi-tech-personnel-companies/",
+      "webReporting": true
+    },
+    {
+      "he": "טיים-ווטש",
+      "en": "Timewatch",
+      "aliases": ["Timewatch", "טיים ווטש", "טיימווטש"],
+      "url": null,
+      "source": null,
+      "webReporting": null
+    },
+    {
+      "he": "SAP SuccessFactors",
+      "en": "SAP SuccessFactors",
+      "aliases": ["SuccessFactors", "SAP SF"],
+      "url": "https://www.sap.com/products/hcm/hr-payroll.html",
+      "source": "https://www.sap.com/products/hcm/hr-payroll.html",
+      "webReporting": true
+    }
+  ],
+  "sources": [
+    {
+      "he": "מל\"מ (מרכז לוגיסטיקה ומשאבים / מלם)",
+      "en": "Malam government attendance report",
+      "aliases": ["מל\"מ", "מלם", "Malam TRM"],
+      "source": "https://www.malam-payroll.com/%D7%93%D7%99%D7%95%D7%95%D7%97%D7%99-%D7%A0%D7%95%D7%9B%D7%97%D7%95%D7%AA/"
+    },
+    {
+      "he": "מכרז מרכזי שירותי מחשוב (מינהל הרכש הממשלתי)",
+      "en": "Central Government Computing Services Tender 01-2023",
+      "aliases": ["מכרז 01-2023", "מכרז חשכ\"ל", "מכרז מרכזי מחשוב"],
+      "source": "https://mr.gov.il/ilgstorefront/he/news/details/290620231038"
+    }
+  ]
+}

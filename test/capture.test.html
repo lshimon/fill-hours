@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="he"><head><meta charset="utf-8"><title>דיווח ועדכון - ישראל ישראלי 21001</title>
+<meta name="author" content="Israel Israeli">
+<script src="/js/app.js?v=abc&user=21001"></script>
+<script>var user = {"name":"ישראל ישראלי","EmployeeId":394221001,"email":"israel@example.com"};</script>
+<link rel="stylesheet" href="/css/site.css?t=1">
+<style>.cDM{color:red}</style>
+</head><body>
+<!-- employee 394221001 -->
+<div id="ctl00_mp_Strip" title="ישראל ישראלי">שלום ישראל ישראלי, מספר עובד 21001</div>
+<a href="/Hilannetv2/Profile.aspx?empId=394221001#top" aria-label="הפרופיל של ישראל">פרופיל</a>
+<form action="/cal.aspx?isOnSelf=true&user=israel">
+<input type="hidden" name="__VIEWSTATE" value="dGhpcyBpcyBhIHZlcnkgbG9uZyB2aWV3c3RhdGUgd2l0aCBpc3JhZWwgaXNyYWVsaSBpbnNpZGU=">
+<input type="text" id="ctl00_mp_RG_Days_394221001_2026_08_cellOf_ManualEntry_row_0_0" value="08:12" placeholder="כניסה">
+<select name="Symbol"><option value="0" selected>נוכחות</option><option value="100">עבודה מהבית</option></select>
+<textarea name="note">פגישה עם דנה כהן</textarea>
+<table><tr><td days="9710" aria-label="2" class="cDIES">2</td></tr></table>
+<img src="data:image/png;base64,AAAA" alt="תמונה של ישראל">
+<iframe srcdoc="<p>israel@example.com</p>"></iframe>
+<button onclick="go('394221001','israel@example.com')">שמירה</button>
+</form>
+<div class="cDM">09:03</div>
+<div id="out"></div>
+<script src="../capture/sanitize.js"></script>
+<script>
+  const r = pscSanitizeFrame();
+  const secrets = ['ישראל', 'Israel', 'israel', '21001', '394221001', 'example.com', 'דנה', 'כהן', '08:12', '09:03', 'dGhpcyBp', 'empId', 'isOnSelf', 'AAAA'];
+  const leaks = secrets.filter((s) => r.html.includes(s));
+  const keep = ['ctl00_mp_RG_Days_', 'ManualEntry', 'days="9710"', 'cDIES', '/js/app.js', '/css/site.css', '.cDM{color:red}', '__VIEWSTATE', 'Symbol'];
+  const lost = keep.filter((s) => !r.html.includes(s) && !r.sources.join(' ').includes(s));
+  document.getElementById('out').setAttribute('data-html', r.html); document.getElementById('out').setAttribute('data-result', JSON.stringify({ leaks, lost, stats: r.stats, sources: r.sources }));
+  document.title = 'RESULT ' + JSON.stringify({ leaks, lost });
+</script>
+</body></html>

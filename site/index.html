@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מדווחים שעות פעם אחת</title>
+<meta name="description" content="בוחרים את חברת הקבלן והמערכת, ומקבלים כלי שמעתיק את השעות בשבילכם.">
+<style>
+  :root { --ink:#1f2a2d; --muted:#5b6b72; --line:#dde3e8; --bg:#f4f6f8; --card:#fff; --accent:#2ea0c8; --accent-ink:#fff; --ok:#1b7a3a; --warn:#9a5b00; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.55 system-ui, -apple-system, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { font-size: clamp(28px, 6vw, 40px); line-height: 1.1; margin: 0 0 10px; }
+  .sub { color: var(--muted); font-size: 18px; margin: 0 0 6px; }
+  .about { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin: 16px 0; }
+  label { display:block; font-weight: 600; margin: 14px 0 6px; }
+  .field { position: relative; }
+  input[type=text], select { width:100%; font: inherit; padding: 11px 12px; border: 1px solid #c9d2d8; border-radius: 10px; background:#fff; color: var(--ink); }
+  input[type=text]:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .suggest { position:absolute; inset-inline:0; top:100%; margin-top:4px; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.08); z-index:5; max-height:260px; overflow:auto; }
+  .suggest div { padding: 9px 12px; cursor: pointer; }
+  .suggest div[aria-selected=true], .suggest div:hover { background:#eef6fa; }
+  .suggest small { color: var(--muted); margin-inline-start: 6px; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 6px; min-height: 18px; }
+  .note.auto { color: var(--ok); }
+  button.primary { margin-top: 18px; width: 100%; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 10px; padding: 13px; font: 600 17px system-ui, Arial, sans-serif; cursor: pointer; }
+  #result h2 { font-size: 22px; margin: 0 0 8px; }
+  .owner { font-size: 14px; color: var(--muted); }
+  ol { padding-inline-start: 22px; margin: 10px 0; }
+  li { margin: 4px 0; }
+  .links a, a.btn { display: inline-block; margin: 6px 0 0 8px; padding: 9px 14px; border-radius: 10px; background: #eef6fa; color: #0f5f7a; text-decoration: none; font-weight: 600; }
+  a.btn.wa { background: #e7f7ec; color: #135c2c; }
+  a.btn.disabled { background: #f0f2f4; color: #8a979d; pointer-events: none; }
+  .warn { color: var(--warn); font-size: 14px; margin-top: 8px; }
+  .option { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 14px; }
+  .option h3 { font-size: 18px; margin: 0 0 4px; }
+  .privacy { background: #f6faf7; border: 1px solid #d5eadb; border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-top: 10px; }
+  footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 28px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>מדווחים שעות פעם אחת. וזהו.</h1>
+  <p class="sub">בוחרים את חברת הקבלן והמערכת, ומקבלים כלי שמעתיק את השעות בשבילכם.</p>
+  <p class="about">אנחנו שמעון ורבקה. נמאס לנו לדווח שעות פעמיים, אז בנינו כלים שעושים את זה לבד. הכלים בחינם וקוד פתוח.</p>
+
+  <form class="card" id="form" autocomplete="off">
+    <label for="company">חברת הקבלן</label>
+    <div class="field">
+      <input type="text" id="company" placeholder="התחילו להקליד..." role="combobox" aria-expanded="false" aria-controls="company-list">
+      <div class="suggest" id="company-list" role="listbox" hidden></div>
+    </div>
+    <div class="note" id="company-note"></div>
+
+    <label for="payroll">מערכת השעות של חברת הקבלן</label>
+    <div class="field">
+      <input type="text" id="payroll" placeholder="התחילו להקליד..." role="combobox" aria-expanded="false" aria-controls="payroll-list">
+      <div class="suggest" id="payroll-list" role="listbox" hidden></div>
+    </div>
+    <div class="note" id="payroll-note"></div>
+
+    <label for="source">מאיפה אתם מעתיקים את השעות?</label>
+    <select id="source"></select>
+
+    <button class="primary" type="submit">מצאו לי כלי</button>
+  </form>
+
+  <section class="card" id="result" hidden aria-live="polite"></section>
+
+  <footer>אנחנו פרויקט עצמאי, לא קשורים לחברות התוכנה או לחברות הקבלן.</footer>
+</main>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.HOURS_DATA;
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // ---- matching: case, quotes, geresh, dots, dashes, spaces and final letters do not matter ----
+  const FINALS = { 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ' };
+  const norm = (s) => String(s || '').toLowerCase().replace(/[ךםןףץ]/g, (c) => FINALS[c]).replace(/["'׳״`.\-_\s/()]/g, '');
+  function lev1(a, b) { // true when edit distance <= 1
+    if (Math.abs(a.length - b.length) > 1) return false;
+    let i = 0, j = 0, edits = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+    }
+    return edits + (a.length - i) + (b.length - j) <= 1;
+  }
+  function search(list, q) {
+    const n = norm(q); if (!n) return [];
+    const scored = [];
+    for (const item of list) {
+      const keys = [item.he, item.en, ...(item.aliases || [])].map(norm);
+      let score = 0;
+      for (const k of keys) {
+        if (k === n) score = Math.max(score, 3);
+        else if (k.startsWith(n)) score = Math.max(score, 2);
+        else if (k.includes(n) && n.length >= 2) score = Math.max(score, 1);
+        else if (n.length >= 4 && lev1(n, k.slice(0, n.length))) score = Math.max(score, 0.5);
+      }
+      if (score) scored.push({ item, score });
+    }
+    return scored.sort((a, b) => b.score - a.score).slice(0, 8).map((x) => x.item);
+  }
+  const exact = (list, q) => { const n = norm(q); return list.find((i) => [i.he, i.en, ...(i.aliases || [])].some((k) => norm(k) === n)) || null; };
+
+  // ---- combobox ----
+  function combo(inputSel, listSel, list, onPick) {
+    const input = $(inputSel), box = $(listSel); let items = [], active = -1;
+    const close = () => { box.hidden = true; input.setAttribute('aria-expanded', 'false'); active = -1; };
+    const render = () => {
+      items = search(list, input.value);
+      box.innerHTML = items.map((it, i) => `<div role="option" data-i="${i}" aria-selected="${i === active}">${esc(it.he)}<small>${esc(it.en)}</small></div>`).join('');
+      box.hidden = !items.length; input.setAttribute('aria-expanded', String(!!items.length));
+    };
+    const pick = (it) => { input.value = it.he; close(); onPick(it); };
+    input.addEventListener('input', () => { active = -1; render(); onPick(exact(list, input.value), true); });
+    input.addEventListener('keydown', (e) => {
+      if (box.hidden) return;
+      if (e.key === 'ArrowDown') { active = Math.min(items.length - 1, active + 1); render(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { active = Math.max(0, active - 1); render(); e.preventDefault(); }
+      else if (e.key === 'Enter' && active >= 0) { pick(items[active]); e.preventDefault(); }
+      else if (e.key === 'Escape') close();
+    });
+    box.addEventListener('mousedown', (e) => { const d = e.target.closest('[data-i]'); if (d) { pick(items[+d.dataset.i]); e.preventDefault(); } });
+    input.addEventListener('blur', () => setTimeout(close, 120));
+  }
+
+  let company = null, payroll = null, payrollAuto = false;
+  combo('#company', '#company-list', D.contractors, (it, typing) => {
+    company = it;
+    const note = $('#company-note');
+    if (it && it.payroll) {
+      const p = D.payroll.find((x) => x.key === it.payroll);
+      if (p && (!payroll || payrollAuto)) { payroll = p; payrollAuto = true; $('#payroll').value = p.he; $('#payroll-note').textContent = 'מילאנו אוטומטית לפי החברה, אפשר לשנות אם צריך.'; $('#payroll-note').className = 'note auto'; }
+      note.textContent = '';
+    } else if (!it && $('#company').value.trim() && !typing) {
+      note.textContent = 'החברה לא ברשימה? הכל בסדר. פשוט תכתבו את השם ונמשיך משם.';
+    } else note.textContent = '';
+  });
+  combo('#payroll', '#payroll-list', D.payroll, (it) => {
+    payroll = it; payrollAuto = false;
+    const note = $('#payroll-note'); note.className = 'note'; note.textContent = '';
+  });
+  $('#source').innerHTML = D.sources.map((s) => `<option value="${s.key}">${esc(s.label)}</option>`).join('');
+
+  // ---- result ----
+  function contactButtons(company, system) {
+    const msg = 'היי, הגעתי מהעמוד של דיווח השעות. אני בחברה {company} והמערכת היא {system}.'
+      .replace('{company}', company || '?').replace('{system}', system || '?');
+    return D.contacts.map((c) => {
+      const wa = c.whatsapp ? `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${esc(c.whatsapp)}?text=${encodeURIComponent(msg)}">וואטסאפ ל${esc(c.name)}</a>`
+        : `<a class="btn disabled">וואטסאפ ל${esc(c.name)} (בקרוב)</a>`;
+      const tm = c.teams ? `<a class="btn" target="_blank" rel="noopener" href="https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(c.teams)}&message=${encodeURIComponent(msg)}">Teams ל${esc(c.name)}</a>` : '';
+      return wa + tm;
+    }).join('');
+  }
+
+  $('#form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const companyName = company ? company.he : $('#company').value.trim();
+    const systemName = payroll ? payroll.he : $('#payroll').value.trim();
+    const source = $('#source').value;
+    const tool = payroll && D.tools[payroll.key];
+    const out = $('#result'); let html = '';
+
+    if (tool && !tool.pending) {
+      html += `<h2>יש לנו כלי בשבילכם: ${esc(tool.name)}</h2><div class="owner">מי בנה: ${esc(tool.owner)}</div>`;
+      html += `<p>${esc(tool.desc)}</p><ol>${tool.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>`;
+      html += `<div class="links">${tool.links.map((l) => `<a target="_blank" rel="noopener" href="${esc(l.url)}">${esc(l.label)}</a>`).join('')}</div>`;
+      if (tool.sources && !tool.sources.includes(source)) html += `<div class="warn">${esc(tool.sourceNote || 'הכלי עוד לא קורא את מקור השעות שבחרתם. כתבו לנו ונבדוק יחד.')}</div>`;
+      html += `<div class="option"><h3>שאלות? כתבו לנו</h3>${contactButtons(companyName, systemName)}</div>`;
+    } else if (tool && tool.pending) {
+      html += `<h2>${esc(tool.name)}: יש פתרון בדרך</h2><p>${esc(tool.desc)}</p>${contactButtons(companyName, systemName)}`;
+    } else {
+      html += `<h2>עוד אין לנו כלי ל${esc(systemName || 'מערכת הזאת')}</h2>`;
+      html += `<p>אוקיי, עוד אין לנו כלי למערכת הזאת. רוצים לבנות אותו איתנו? זה לא טכני, מבטיחים.</p>`;
+      html += `<div class="option"><h3>הדרך הפשוטה: דברו איתנו</h3><p>כתבו לנו בוואטסאפ או ב-Teams את שם החברה והמערכת ונדבר.</p>${contactButtons(companyName, systemName)}</div>`;
+      html += `<div class="option"><h3>הדרך הטכנית (אבל בקטנה): לשמור את מבנה העמוד</h3>
+        <p>יש תוסף קטן ששומר רק את המבנה של עמוד השעות, בלי שום פרט אישי שלכם. שולחים לנו את הקובץ שהוא יוצר, וממנו אנחנו בונים את הכלי החדש.</p>
+        <ol><li>מתקינים את התוסף לדפדפן</li><li>נכנסים למערכת, לעמוד דיווח השעות של החודש האחרון</li><li>לוחצים על האייקון של התוסף, רואים תצוגה מקדימה ולוחצים 'הורדה'</li><li>שולחים לנו את הקובץ שירד למחשב</li></ol>
+        <div class="privacy">התוסף מוחק מהעמוד כל טקסט, כל ערך בשדות וכל מספר מזהה, ומשאיר רק את המבנה. לפני ההורדה רואים את הקובץ, ואפשר לחפש בו את השם או מספר העובד שלכם כדי לוודא שהם לא שם. שום דבר לא נשלח אוטומטית, אתם שולחים את הקובץ בעצמכם.</div>
+        <div class="links"><a href="${esc(D.captureDownload)}">הורדת התוסף</a><a target="_blank" rel="noopener" href="https://github.com/lshimon/fill-hours/tree/main/capture">הקוד של התוסף</a></div></div>`;
+    }
+    out.innerHTML = html; out.hidden = false;
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
+</script>
+</body>
+</html>

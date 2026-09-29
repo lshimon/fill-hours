@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Page Structure Capture",
+  "version": "0.1.0",
+  "description": "שומר את מבנה עמוד הדיווח בלבד, בלי טקסט, ערכים או מספרים מזהים, כדי שנוכל לבנות כלי מילוי שעות למערכת שלכם.",
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "action": { "default_title": "שמירת מבנה העמוד (בלי מידע אישי)", "default_icon": { "16": "icons/icon16.png", "48": "icons/icon48.png" } },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["activeTab", "scripting", "storage"]
+}
