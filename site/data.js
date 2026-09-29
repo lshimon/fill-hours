@@ -13,7 +13,8 @@ window.HOURS_DATA = {
     hilan: {
       name: 'Fill Hours (מילוי שעות)', owner: 'שמעון',
       desc: 'תוסף לכרום שממלא את השעות בחילנט מטבלה שמדביקים או מקובץ PDF. אתם רק צריכים ללחוץ על \'שמירה\' בסוף.',
-      sources: ['sheet', 'malam', 'ok2go'],
+      // how sure we are per hours source: verified | sample (tested on one real file, from `place`) | try | no
+      support: { sheet: 'verified', malam: { level: 'sample', place: 'משרד הבריאות' }, ok2go: { level: 'sample', place: 'משרד הבריאות' }, otherpdf: 'try', other: 'no' },
       steps: [
         'מורידים ומתקינים בכרום. עד שיאושר לחנות, מתקינים דרך \'מצב מפתחים\' (ההוראות בקישור).',
         'נכנסים לחילנט, לעמוד דיווח ועדכון, ופותחים את החודש.',
@@ -25,8 +26,7 @@ window.HOURS_DATA = {
     synerion: {
       name: 'synerion_attendance', owner: 'רבקה',
       desc: 'תוכנה קטנה למחשב עם Windows שקוראת את קובץ ה-PDF החתום של דוח השעות ממל"מ וממלאת את השעות בסינריון.',
-      sources: ['malam'],
-      sourceNote: 'הכלי הזה קורא כרגע רק את דוח ה-PDF של מל"מ. השעות שלכם מגיעות ממקום אחר? כתבו לנו.',
+      support: { sheet: 'no', malam: { level: 'sample', place: 'משרד הבריאות' }, ok2go: 'no', otherpdf: 'no', other: 'no' },
       steps: [
         'מורידים את קובץ ה-ZIP העדכני מעמוד ההורדות ופותחים אותו לתיקייה.',
         'מפעילים בלחיצה כפולה על הקובץ \'התחל כאן\', ונפתח מסך בדפדפן.',
@@ -38,7 +38,7 @@ window.HOURS_DATA = {
     tlushim: {
       name: 'תלושים', owner: 'רחל גרינצייג', pending: true,
       desc: 'למערכת \'תלושים\' יש פתרון שעובד אצל רחל. אנחנו מסדרים אותו כדי שיהיה זמין לכולם, ובינתיים אתם יכולים לכתוב לנו ונחבר אתכם.',
-      sources: null, steps: [], links: [],
+      support: null, steps: [], links: [],
     },
   },
 
@@ -77,8 +77,17 @@ window.HOURS_DATA = {
     { key: 'sheet', label: 'גיליון או טבלה שאני מנהל/ת' },
     { key: 'malam', label: 'דוח PDF של מל"מ' },
     { key: 'ok2go', label: 'דוח PDF של ok2go' },
+    { key: 'otherpdf', label: 'דוח PDF אחר' },
     { key: 'other', label: 'משהו אחר' },
   ],
+
+  // Confidence wording shown on a tool card for the chosen hours source.
+  confidence: {
+    verified: 'בדקנו את הכלי על קובץ אמיתי מהסוג הזה, וזה עבד.',
+    sample: 'בדקנו את זה רק עם דוח מ{place}. זה כנראה יעבוד גם אצלכם, אבל תעיפו מבט על התצוגה המקדימה כדי לוודא שהשעות נקראו נכון.',
+    try: 'עוד לא בדקנו קובץ מהסוג הזה. הכלי ינסה לקרוא אותו, אבל תבדקו טוב את התצוגה המקדימה. אם זה לא עובד, שלחו לנו את הקובץ ונוסיף תמיכה.',
+    no: 'הכלי עוד לא קורא את מקור השעות הזה. כתבו לנו ונבדוק יחד.',
+  },
 
   captureDownload: 'downloads/page-structure-capture.zip',
 };
