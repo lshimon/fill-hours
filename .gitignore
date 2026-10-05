@@ -18,3 +18,4 @@ test/*.local.*
 test/fixtures/
 store/upload/
 .claude/launch.json
+.vercel
