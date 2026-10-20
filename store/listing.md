@@ -1,6 +1,6 @@
 # Chrome Web Store listing: Fill Hours
 
-Source of truth: `manifest.json` 0.3.0 and `README.md`. Nothing below claims more than they show.
+Source of truth: `manifest.json` 0.3.1 and `README.md`. Nothing below claims more than they show.
 Visibility for the first release: **unlisted** (install by link only, not in store search).
 
 ## Name (10 chars)
@@ -9,7 +9,7 @@ Fill Hours
 
 ## Short description
 
-Hebrew (primary locale, 93 chars):
+Hebrew (primary locale, 92 chars):
 
 מילוי שעות בחילנט מכל טבלה או מקובץ PDF של דוח נוכחות: מדביקים, בודקים, לוחצים שמירה בעצמכם.
 
@@ -35,7 +35,7 @@ Hebrew:
 - לא נוגע בהתחברות, לא שומר סיסמאות.
 - התוסף עצמו לא שולח מידע לשום מקום; הוא רק מפעיל את הכפתורים של חילנט בדף. הטבלה שהדבקתם וההגדרות נשמרות ב-localStorage של אתר חילנט בדפדפן שלכם (לתוסף אין שרת). הן נשארות שם גם אחרי הסרת התוסף; הכפתור "נקה" מוחק אותן.
 
-עובד היום עם חילנט. תוסף עצמאי, לא קשור לחברת חילן ולא מטעמה. עובדים עם מערכת אחרת? פתחו Issue ב-GitHub עם שם המערכת וצילום מסך של עמוד הדיווח. הקוד פתוח: github.com/lshimon/fill-hours
+עובד היום עם חילנט. תוסף עצמאי, לא קשור לחברות חילן ו-ok2go, למוצר מלם שכר ולבעליו, ולא מטעמם. עובדים עם מערכת אחרת? פתחו Issue ב-GitHub עם שם המערכת וצילום מסך של עמוד הדיווח. הקוד פתוח: github.com/lshimon/fill-hours
 
 English:
 
@@ -53,7 +53,7 @@ What it does not do:
 - Never touches login or stores passwords.
 - The extension itself sends nothing anywhere; it only operates Hilanet's own page controls. The pasted table and your settings are kept in the Hilanet site's localStorage in your browser (the extension has no server). They remain after uninstall; the "נקה" button clears them.
 
-Works today with Hilanet. Independent tool, not affiliated with or endorsed by Hilan Ltd. Open source: github.com/lshimon/fill-hours
+Works today with Hilanet. Independent tool, not affiliated with or endorsed by Hilan Ltd., ok2go, or the makers of Malam Payroll. Open source: github.com/lshimon/fill-hours
 
 ## Category
 
@@ -63,7 +63,7 @@ Productivity. It is a form-filling helper for a work system, the standard home f
 
 Single purpose: fill the attendance grid on the Hilanet "דיווח ועדכון" page from data the user provides.
 
-Host access: content script on `https://*.net.hilan.co.il/Hilannetv2/Attendance/calendarpage.aspx*` only. Needed to add the panel to that page and write into its form fields. The script runs in the page's main world (`world: MAIN`) so it can wait on Hilanet's ASP.NET partial-page updates (`Sys.WebForms.PageRequestManager`) between grid changes; it calls no page APIs beyond DOM reads, clicks and input events. No other permissions are requested: no `storage` API (uses the site's `localStorage` and `sessionStorage`), no `tabs`, no `scripting`, no network access.
+Host access: content script on `https://*.net.hilan.co.il/Hilannetv2/Attendance/calendarpage.aspx*` only. Needed to add the panel to that page and write into its form fields. The script runs in the page's main world (`world: MAIN`) so it can wait on Hilanet's ASP.NET partial-page updates (`Sys.WebForms.PageRequestManager`) between grid changes; the only page API it touches is a read-only check, `Sys.WebForms.PageRequestManager.getInstance().get_isInAsyncPostBack()`; everything else is DOM reads, clicks and input events. No other permissions are requested: no `storage` API (uses the site's `localStorage` and `sessionStorage`), no `tabs`, no `scripting`, no network access.
 
 Data use: attendance data the user pastes or loads (which may include their name and employee id, as printed on the reports) is processed locally in the browser and never transmitted. Nothing is collected, sold or sent to any server. The extension makes no network requests.
 
@@ -71,7 +71,7 @@ Data use: attendance data the user pastes or loads (which may include their name
 
 | Field in the dashboard | File | Size |
 |---|---|---|
-| Package | `../dist/fill-hours-0.3.0.zip` (rebuild with the zip command in the README after any code change) | |
+| Package | `../dist/fill-hours-0.3.1.zip` (rebuild after any code change: `cd /Users/shimonleizerovich/Documents/Projects/fill-hours-hilan && zip -r dist/fill-hours-0.3.1.zip manifest.json content.js parse.js pdfsource.js panel.css icons vendor -x "*.DS_Store"`, copy it to `store/upload/`, then update the sha256 in `store/upload/SUBMIT.md`) | |
 | Screenshot 1 (value first: paste and preview) | `shots/shot1.png` | 1280x800 |
 | Screenshot 2 (PDF input, total verified) | `shots/shot2.png` | 1280x800 |
 | Screenshot 3 (filled and verified, save is yours) | `shots/shot3.png` | 1280x800 |
@@ -96,5 +96,5 @@ Deferred. The listing is unlisted, so store search does not apply. Revisit if th
 | Field | Count | Limit |
 |---|---|---|
 | Name | 10 | 45 |
-| Short description (he) | 93 | 132 |
+| Short description (he) | 92 | 132 |
 | Short description (en) | 117 | 132 |

@@ -29,7 +29,7 @@
   const STORE_SETTINGS = 'hilanFill.settings';
 
   const defaultSettings = {
-    project: 'משרד הבריאות',      // substring matched against the project dropdown text; empty = do not touch
+    project: '',                  // substring matched against the project dropdown text; empty = do not touch
     officeWord: 'משרד',           // a row containing this word = office (נוכחות)
     homeWord: 'בית',              // a row containing this word = home (עבודה מהבית)
     defaultOffice: false,         // a row with neither word = office when true, home when false

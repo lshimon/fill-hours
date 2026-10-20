@@ -23,7 +23,8 @@ from data you provide (a pasted table or an attendance-report PDF you select).
   is uninstalled until you press "נקה" or clear the site's data. The extension does not use the
   Chrome storage API and nothing is synced by it.
 - A short "fill in progress" marker is kept in session storage for up to two minutes so a fill can
-  continue after Hilanet reloads the page.
+  continue after Hilanet reloads the page. A second session-storage entry, the time the panel was
+  last open, is used for up to one minute so the panel reopens after such a reload.
 - Nothing is stored on any server.
 
 ## What is sent

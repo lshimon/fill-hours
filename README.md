@@ -77,6 +77,8 @@ add a branch in `pdfsource.js` keyed on a structural fingerprint.
 ## Settings (in the panel, saved in the browser)
 
 - **פרויקט מכיל**: substring of the project name to pick in the "לקוח" dropdown. Empty = leave untouched.
+  The default is empty, so the project dropdown is left as it is. Type part of your project's name to have
+  it picked; if no project contains the text, the dropdown is left untouched.
 - **הזמנה מכיל**: substring for the "הזמנה" dropdown that opens after the project. Empty = pick it automatically
   when it is the only option; if there are several, the row is left for you and the status says so. "משימה" behaves the same.
 - The panel minimizes with the "−" button; the bottom-left button reopens it.
@@ -93,13 +95,16 @@ add a branch in `pdfsource.js` keyed on a structural fingerprint.
 ## Files
 
 - `parse.js`: pasted text to rows. Pure, no DOM, also loads in Node for tests.
+- `pdfsource.js`: attendance-report PDF to the same rows (Malam, ok2go, other).
 - `content.js`: panel UI, calendar checks, day selection, grid fill.
+- `vendor/`: bundled pdf.js (Apache 2.0).
 - `panel.css`, `manifest.json`, `icons/`.
-- `test/parse.test.js`: `node test/parse.test.js`.
+- `ROWS.md`: the shared day-row format.
+- `test/parse.test.js`, `test/pdf.test.js`: `node test/parse.test.js`, `node test/pdf.test.js`.
 
 ## Verified on
 
-matrix.net.hilan.co.il, September 2026. Grid selectors: `ManualEntry_EmployeeReports_row_N_0`,
+one contractor tenant, September 2026. Grid selectors: `ManualEntry_EmployeeReports_row_N_0`,
 `ManualExit_...`, `Symbol.SymbolId_...`, `Project.ProjectStep1_...`, date cell `cellOf_ReportDate_row_N_`,
 day cells `td[days]` (days since 2000-01-01), select button `#ctl00_mp_RefreshSelectedDays`.
 Report type codes on this tenant: 0 נוכחות, 100 עבודה מהבית. Other tenants use other codes: check the dropdown.
