@@ -81,6 +81,7 @@ add a branch in `pdfsource.js` keyed on a structural fingerprint.
   it picked; if no project contains the text, the dropdown is left untouched.
 - **הזמנה מכיל**: substring for the "הזמנה" dropdown that opens after the project. Empty = pick it automatically
   when it is the only option; if there are several, the row is left for you and the status says so. "משימה" behaves the same.
+- **סוג דיווח למשרד / לבית**: the names of the office and home options in your company's "סוג דיווח" dropdown (defaults: נוכחות, עבודה מהבית). Companies name them differently; focusing the field suggests the names found on the page. If a name is not found, the type is left untouched and the row is reported as not completed.
 - The panel minimizes with the "−" button; the bottom-left button reopens it.
 - **מילת משרד** / **מילת בית**: the words that mark an office day or a home day.
 - **ללא סימון**: what a row with neither word becomes (נוכחות or עבודה מהבית).

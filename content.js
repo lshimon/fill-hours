@@ -14,13 +14,20 @@
   'use strict';
 
   // ---------- constants and settings ----------
-  // Report-type codes differ between Hilan tenants (home = 100 here, 120 or 15 elsewhere), so the
-  // type is resolved by the option TEXT in the grid's own dropdown. Codes are only a last resort.
-  const SYMBOL_FALLBACK = { office: '0', home: '100' };
+  // Report-type codes differ between Hilan tenants (home = 100 here, 120 or 15 elsewhere), and so
+  // do the option names. The type is resolved only by the option TEXT the user configured in the
+  // panel. No code fallback: a guessed code can mean another type on another tenant. Not found =
+  // null, the type is left untouched and validateRow reports 'סוג' for that row.
   function symbolValue(select, office) {
-    const want = office ? settings.officeType : settings.homeType;
-    const opt = select && [...select.options].find((o) => o.text.trim().includes(want));
-    return opt ? opt.value : SYMBOL_FALLBACK[office ? 'office' : 'home'];
+    const want = ((office ? settings.officeType : settings.homeType) || '').trim();
+    if (!want || !select) return null;
+    const opt = [...select.options].find((o) => o.text.trim().includes(want));
+    return opt ? opt.value : null;
+  }
+  // Option names in the first visible "סוג דיווח" dropdown, for the panel hint.
+  function typeOptionNames() {
+    const sel = document.querySelector('select[id*="SymbolId_EmployeeReports_row_"]');
+    return sel ? [...sel.options].map((o) => o.text.trim()).filter(Boolean) : [];
   }
   const STORE_TEXT = 'hilanFill.text';
   const STORE_PDFINFO = 'hilanFill.pdfInfo';
@@ -189,7 +196,7 @@
     const g = refind(r.key);
     if (!g) return ['שורה לא נמצאה'];
     const bad = [];
-    if (g.symbol && g.symbol.value !== symbolValue(g.symbol, r.office)) bad.push('סוג');
+    if (g.symbol && g.symbol.value !== symbolValue(g.symbol, r.office)) bad.push('סוג (בדקו את שמות סוג הדיווח בהגדרות)');
     const pv = projectValue(g.project);
     if (pv && g.project.value !== pv) bad.push('לקוח');
     for (const [field, label] of [['order', 'הזמנה'], ['task', 'משימה']]) {
@@ -207,7 +214,8 @@
     if (!g) return 'missing';
     if (g.entry.disabled) return 'locked';
 
-    if (setSelect(g.symbol, symbolValue(g.symbol, r.office))) await waitForNext(r.key, null, 4000);
+    const sv = symbolValue(g.symbol, r.office);
+    if (sv != null && setSelect(g.symbol, sv)) await waitForNext(r.key, null, 4000);
     g = refind(r.key) || g;
     const pv = projectValue(g.project);
     if (pv && setSelect(g.project, pv)) await waitForNext(r.key, 'order', 6000);
@@ -418,6 +426,8 @@
     settings.officeWord = ui.officeWord.value.trim() || 'משרד';
     settings.homeWord = ui.homeWord.value.trim() || 'בית';
     settings.defaultOffice = ui.defaultType.value === 'office';
+    settings.officeType = ui.officeType.value.trim() || 'נוכחות';
+    settings.homeType = ui.homeType.value.trim() || 'עבודה מהבית';
     settings.orderText = ui.orderText.value.trim();
     settings.writeNotes = ui.notes.checked;
     settings.updateReported = ui.updateReported.checked;
@@ -432,6 +442,9 @@
     ui.project = h('input', { type: 'text', value: settings.project, size: '16', onchange: saveSettings });
     ui.orderText = h('input', { type: 'text', value: settings.orderText || '', size: '12', placeholder: 'ריק = היחידה', onchange: saveSettings });
     ui.officeWord = h('input', { type: 'text', value: settings.officeWord, size: '6', onchange: saveSettings });
+    ui.typeList = h('datalist', { id: 'hf-type-options' });
+    ui.officeType = h('input', { type: 'text', value: settings.officeType, size: '10', list: 'hf-type-options', onchange: saveSettings, onfocus: fillTypeList });
+    ui.homeType = h('input', { type: 'text', value: settings.homeType, size: '10', list: 'hf-type-options', onchange: saveSettings, onfocus: fillTypeList });
     ui.homeWord = h('input', { type: 'text', value: settings.homeWord, size: '6', onchange: saveSettings });
     ui.defaultType = h('select', { onchange: saveSettings },
       h('option', { value: 'office', text: 'נוכחות' }), h('option', { value: 'home', text: 'עבודה מהבית' }));
@@ -456,6 +469,7 @@
         h('div', { class: 'hf-row' }, h('label', { text: 'או קובץ PDF של דוח נוכחות:' }), ui.pdf),
         h('div', { class: 'hf-row' }, h('label', { text: 'פרויקט מכיל:' }), ui.project, h('label', { text: 'הזמנה מכיל:' }), ui.orderText),
         h('div', { class: 'hf-row' }, h('label', { text: 'מילת משרד:' }), ui.officeWord, h('label', { text: 'מילת בית:' }), ui.homeWord, h('label', { text: 'ללא סימון:' }), ui.defaultType),
+        h('div', { class: 'hf-row' }, h('label', { text: 'סוג דיווח למשרד:' }), ui.officeType, h('label', { text: 'לבית:' }), ui.homeType, ui.typeList),
         h('div', { class: 'hf-row' }, h('label', {}, ui.notes, ' להעתיק הערות'), h('label', {}, ui.updateReported, ' לעדכן גם ימים שכבר דווחו')),
         h('div', { class: 'hf-row' }, ui.check, ui.fill, ui.stop, ui.filter, ui.clear),
         ui.preview, ui.status));
@@ -468,6 +482,12 @@
     if (openAt && Date.now() - openAt < 60000) setOpen(true);
     // stamp the moment the page leaves, so a postback reload reopens but a later visit does not
     window.addEventListener('pagehide', () => { try { if (!ui.panel.hidden) sessionStorage.setItem(STORE_OPEN, String(Date.now())); } catch (e) { /* ignore */ } });
+  }
+
+  // Suggest the real option names of this company's "סוג דיווח" dropdown when one is on screen.
+  function fillTypeList() {
+    ui.typeList.innerHTML = '';
+    for (const n of typeOptionNames()) ui.typeList.append(h('option', { value: n }));
   }
 
   function setOpen(open) {
